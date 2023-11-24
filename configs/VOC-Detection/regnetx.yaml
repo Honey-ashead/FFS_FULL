@@ -1,0 +1,42 @@
+_BASE_: "../Base-RCNN-FPN.yaml"
+MODEL:
+  PIXEL_STD: [57.375, 57.120, 58.395]
+  BACKBONE:
+    NAME: "build_regnetx_fpn_backbone"
+  META_ARCHITECTURE: "GeneralizedRCNNLogisticGMM"
+  WEIGHTS: "/home/zkx/Workspace/NFFS/configs/regnetx.pth"
+  FPN:
+    IN_FEATURES: ["s1", "s2", "s3", "s4"]
+  MASK_ON: False
+  RESNETS:
+    DEPTH: 50
+  ROI_HEADS:
+    NAME: "ROIHeadsFFSLogisticGMM"
+    NUM_CLASSES: 20
+INPUT:
+  MIN_SIZE_TRAIN: (480, 512, 544, 576, 608, 640, 672, 704, 736, 768, 800)
+  MIN_SIZE_TEST: 800
+DATASETS:
+  TRAIN: ('voc_custom_train',)
+  TEST: ('voc_custom_val',)
+FFS:
+  STARTING_ITER: 12000
+  SAMPLE_NUMBER: 75
+  BATCH_SIZE: 75
+  SAMPLE_FROM: 200
+  ENABLE_CLUSTERING: True
+  CLUSTERING_START_ITER: 2000
+  CLUSTERING_UPDATE_MU_ITER: 6000
+  CLUSTERING_MOMENTUM: 0.99
+  CLUSTERING_ITEMS_PER_CLASS: 20
+  MARGIN: 10.0
+
+SOLVER:
+  IMS_PER_BATCH: 8
+  BASE_LR: 0.005  # 0.01
+  WEIGHT_DECAY: 5e-5
+  STEPS: (24000, 32000)  # (12000, 16000)
+  MAX_ITER: 48000  # 24000
+  WARMUP_ITERS: 100
+DATALOADER:
+  NUM_WORKERS: 8  # Depends on the available memory
